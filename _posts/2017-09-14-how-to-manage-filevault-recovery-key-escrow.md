@@ -6,7 +6,7 @@ tags: [profiles, filevault, high-sierra]
 The Jamf Pro GUI allows you to automatically set up the necessary payloads to manage the FDE Recovery Key Escrow process for macOS 10.13+.
 
 However, the settings reside in the "Security & Privacy" grouping within the Jamf Pro GUI, forcing you to manage settings other than those related to recovery key escrow. Using the default Jamf-provided GUI, <span class="hi">you may inadvertently lock your users out of being able to make changes to the firewall, analytics settings, screen saver password requirement, etc.</span>
-
+<!--more-->
 You can upload a custom profile to the Jamf Pro Server that manages **only** FDE Recover Key Escrow preferences, but it takes a little work.
 
 You'll also need to sign your resultant configuration profile to prevent the Jamf Pro Server from manipulating its contents or preventing deployment. You can use an Apple Developer certificate, or your Jamf Pro Server's CA (if self signed).
