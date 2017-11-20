@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>haircut</title>
+    <atom:link href="/feed.xml" rel="self" type="application/rss+xml"/>
+    <link>http://localhost:4000/</link>
+    <description>A website with blog posts and pages</description>
+    <pubDate>Sun, 19 Nov 2017 22:11:24 -0500</pubDate>
+    
+      <item>
+        <title>How to Manage FileVault Recovery Key Escrow</title>
+        <link>/how-to-manage-filevault-recovery-key-escrow.html</link>
+        <guid isPermaLink="true">/how-to-manage-filevault-recovery-key-escrow.html</guid>
+        <description>&lt;p&gt;The Jamf Pro GUI allows you to automatically set up the necessary payloads to manage the FDE Recovery Key Escrow process for macOS 10.13+.&lt;/p&gt;
+
+&lt;p&gt;However, the settings reside in the “Security &amp;amp; Privacy” grouping within the Jamf Pro GUI, forcing you to manage settings other than those related to recovery key escrow. Using the default Jamf-provided GUI, &lt;span class=&quot;hi&quot;&gt;you may inadvertently lock your users out of being able to make changes to the firewall, analytics settings, screen saver password requirement, etc.&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;You can upload a custom profile to the Jamf Pro Server that manages &lt;strong&gt;only&lt;/strong&gt; FDE Recover Key Escrow preferences, but it takes a little work.&lt;/p&gt;
+
+&lt;p&gt;You’ll also need to sign your resultant configuration profile to prevent the Jamf Pro Server from manipulating its contents or preventing deployment. You can use an Apple Developer certificate, or your Jamf Pro Server’s CA (if self signed).&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;Create a temporary configuration profile for doing this setup. Name it something disposable – you’ll delete it when done. “TEMP - FDERKE Setup” works. Set the level to “Computer level.” Make sure you &lt;strong&gt;do not add a scope&lt;/strong&gt; to the profile; we’re not deploying it.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Click the “Security &amp;amp; Privacy” group, then click “Configure.” Select the “FileVault” tab. Apply these preferences:
+    &lt;ul&gt;
+      &lt;li&gt;Check the box for &lt;strong&gt;Enable Escrow Personal Recovery Key&lt;/strong&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;Escrow Location Description&lt;/strong&gt;: Describe where the recovery key is being shipped. This is visible to the end-user, so “My Company IT” or whatever is appropriate. We’ll edit this elsewhere, so you can leave it blank.&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;Device Key for Escrowed FileVault Recovery Key&lt;/strong&gt;: Text displayed at the FileVault unlock screen when a user has apparently forgotten their password. Despite the help text, you should leave this blank. By default it will be replaced with the device’s serial number which will aid your technicians in recovering the correct key.&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;Personal Recovery Key Encryption Certificate&lt;/strong&gt;: Set to “Automatically encrypt and decrypt recovery key.”&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Save the profile, then click the “Download” button.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Next we’ll convert the profile to a useable format. In Terminal, run these commands:&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;openssl smime &lt;span class=&quot;nt&quot;&gt;-inform&lt;/span&gt; DER &lt;span class=&quot;nt&quot;&gt;-verify&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-in&lt;/span&gt; /path/to/downloaded/profile.mobileconfig &lt;span class=&quot;nt&quot;&gt;-noverify&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-out&lt;/span&gt; /path/to/de-signed.mobileconfig
+plutil &lt;span class=&quot;nt&quot;&gt;-convert&lt;/span&gt; xml1 /path/to/de-signed.mobileconfig&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;(lines scroll…)&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;Copy the &lt;code class=&quot;highlighter-rouge&quot;&gt;template-fde-recovery-key-escrow.mobileconfig&lt;/code&gt; included in this gist to a new file in your favorite text editor. Change the values of &lt;code class=&quot;highlighter-rouge&quot;&gt;PayloadOrganization&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;Location&lt;/code&gt; as needed.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Open the de-signed profile originally downloaded from the Jamf Pro Server in your text editor. Find the &lt;code class=&quot;highlighter-rouge&quot;&gt;PayloadContent&lt;/code&gt; below &lt;code class=&quot;highlighter-rouge&quot;&gt;PayloadCertificateFileName&lt;/code&gt; – it’s the big, obvious block of certificate data. Copy and paste this to the same location in your edited &lt;code class=&quot;highlighter-rouge&quot;&gt;template-fde-recovery-key-escrow.mobileconfig&lt;/code&gt; file, making sure you get the indentation correct. Save this file with a suitable name like &lt;code class=&quot;highlighter-rouge&quot;&gt;FileVault Recovery Key Escrow.mobileconfig&lt;/code&gt;.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Sign the new profile thusly:&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;/usr/bin/security cms &lt;span class=&quot;nt&quot;&gt;-S&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-N&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Common Name of signing certificate in your keychain&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; /path/to/FileVault&lt;span class=&quot;se&quot;&gt;\ &lt;/span&gt;Recovery&lt;span class=&quot;se&quot;&gt;\ &lt;/span&gt;Key Escrow.mobileconfig &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; /path/to/Signed-FileVault&lt;span class=&quot;se&quot;&gt;\ &lt;/span&gt;Recovery&lt;span class=&quot;se&quot;&gt;\ &lt;/span&gt;Key&lt;span class=&quot;se&quot;&gt;\ &lt;/span&gt;Escrow.mobileconfig&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;(lines scroll…)&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;Delete the temporary configuration profile from your Jamf Pro Server.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Upload your completed &lt;code class=&quot;highlighter-rouge&quot;&gt;Signed-FileVault Recovery Key Escrow.mobileconfig&lt;/code&gt; profile to your Jamf Pro Server, then set an appropriate scope and deploy it.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Thanks to &lt;a href=&quot;https://github.com/opragel&quot;&gt;@opragel&lt;/a&gt; for the &lt;a href=&quot;https://github.com/opragel/profiles/blob/master/macOS%20-%20Escrow%20FileVault%202%20Recovery%20Keys.mobileconfig&quot;&gt;template/example configuration profile&lt;/a&gt;.&lt;/p&gt;
+</description>
+        <pubDate>Thu, 14 Sep 2017 00:00:00 -0400</pubDate>
+      </item>
+    
+  </channel>
+</rss>

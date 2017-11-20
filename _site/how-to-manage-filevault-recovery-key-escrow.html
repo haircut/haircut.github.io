@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html class="no-js">
+  <head>
+	<meta charset="utf-8">
+	<title>How to Manage FileVault Recovery Key Escrow | haircut</title>
+	<meta name="description" content="The Jamf Pro GUI allows you to automatically set up the necessary payloads to manage the FDE Recovery Key Escrow process for macOS 10.13+.">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!-- CSS -->
+	<link rel="stylesheet" href="/assets/css/main.css">
+
+	<!--Favicon-->
+	<link rel="shortcut icon" href="/assets/favicon.ico" type="image/x-icon">
+
+	<!-- Canonical -->
+	<link rel="canonical" href="/how-to-manage-filevault-recovery-key-escrow.html">
+
+	<!-- RSS -->
+	<link rel="alternate" type="application/atom+xml" title="haircut" href="/feed.xml" />
+
+	<!-- Font Awesome -->
+	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+	<!-- Google Fonts -->
+	
+	<link href="//fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,700italic,400italic" rel="stylesheet" type="text/css">
+	
+
+	<!-- KaTeX -->
+	
+
+	<!-- Google Analytics -->
+	
+</head>
+
+  <body>
+    <header class="site-header">
+	<div class="branding">
+		
+		<a href="/">
+			<img class="avatar" src="/assets/img/avatar.png" alt=""/>
+		</a>
+		
+		<h1 class="site-title">
+			<a href="/">haircut</a>
+		</h1>
+	</div>
+	<nav class="site-nav">
+		<ul>
+			
+			
+			
+			
+			<li>
+				<a class="page-link" href="/about/">
+					About
+				</a>
+			</li>
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			<li>
+				<a class="page-link" href="/tags">
+					tags
+				</a>
+			</li>
+			
+			
+			<!-- Social icons from Font Awesome, if enabled  -->
+			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li>
+	<a href="https://github.com/haircut" title="Follow on GitHub">
+		<i class="fa fa-fw fa-github"></i>
+	</a>
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li>
+	<a href="https://twitter.com/twitter" title="Follow on Twitter">
+		<i class="fa fa-fw fa-twitter"></i>
+	</a>
+</li>
+
+
+
+
+
+
+            
+            <!-- Search bar -->
+            
+		</ul>
+	</nav>
+    
+</header>
+
+    <div class="content">
+      <article >
+  <header style="background-image: url('/')">
+    <h1 class="title">How to Manage FileVault Recovery Key Escrow</h1>
+    
+    <p class="meta">
+      September 14, 2017
+      
+    </p>
+  </header>
+  <section class="post-content"><p>The Jamf Pro GUI allows you to automatically set up the necessary payloads to manage the FDE Recovery Key Escrow process for macOS 10.13+.</p>
+
+<p>However, the settings reside in the “Security &amp; Privacy” grouping within the Jamf Pro GUI, forcing you to manage settings other than those related to recovery key escrow. Using the default Jamf-provided GUI, <span class="hi">you may inadvertently lock your users out of being able to make changes to the firewall, analytics settings, screen saver password requirement, etc.</span></p>
+
+<p>You can upload a custom profile to the Jamf Pro Server that manages <strong>only</strong> FDE Recover Key Escrow preferences, but it takes a little work.</p>
+
+<p>You’ll also need to sign your resultant configuration profile to prevent the Jamf Pro Server from manipulating its contents or preventing deployment. You can use an Apple Developer certificate, or your Jamf Pro Server’s CA (if self signed).</p>
+
+<ol>
+  <li>
+    <p>Create a temporary configuration profile for doing this setup. Name it something disposable – you’ll delete it when done. “TEMP - FDERKE Setup” works. Set the level to “Computer level.” Make sure you <strong>do not add a scope</strong> to the profile; we’re not deploying it.</p>
+  </li>
+  <li>Click the “Security &amp; Privacy” group, then click “Configure.” Select the “FileVault” tab. Apply these preferences:
+    <ul>
+      <li>Check the box for <strong>Enable Escrow Personal Recovery Key</strong></li>
+      <li><strong>Escrow Location Description</strong>: Describe where the recovery key is being shipped. This is visible to the end-user, so “My Company IT” or whatever is appropriate. We’ll edit this elsewhere, so you can leave it blank.</li>
+      <li><strong>Device Key for Escrowed FileVault Recovery Key</strong>: Text displayed at the FileVault unlock screen when a user has apparently forgotten their password. Despite the help text, you should leave this blank. By default it will be replaced with the device’s serial number which will aid your technicians in recovering the correct key.</li>
+      <li><strong>Personal Recovery Key Encryption Certificate</strong>: Set to “Automatically encrypt and decrypt recovery key.”</li>
+    </ul>
+  </li>
+  <li>
+    <p>Save the profile, then click the “Download” button.</p>
+  </li>
+  <li>Next we’ll convert the profile to a useable format. In Terminal, run these commands:</li>
+</ol>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">openssl smime <span class="nt">-inform</span> DER <span class="nt">-verify</span> <span class="nt">-in</span> /path/to/downloaded/profile.mobileconfig <span class="nt">-noverify</span> <span class="nt">-out</span> /path/to/de-signed.mobileconfig
+plutil <span class="nt">-convert</span> xml1 /path/to/de-signed.mobileconfig</code></pre></figure>
+
+<p>(lines scroll…)</p>
+
+<ol>
+  <li>
+    <p>Copy the <code class="highlighter-rouge">template-fde-recovery-key-escrow.mobileconfig</code> included in this gist to a new file in your favorite text editor. Change the values of <code class="highlighter-rouge">PayloadOrganization</code> and <code class="highlighter-rouge">Location</code> as needed.</p>
+  </li>
+  <li>
+    <p>Open the de-signed profile originally downloaded from the Jamf Pro Server in your text editor. Find the <code class="highlighter-rouge">PayloadContent</code> below <code class="highlighter-rouge">PayloadCertificateFileName</code> – it’s the big, obvious block of certificate data. Copy and paste this to the same location in your edited <code class="highlighter-rouge">template-fde-recovery-key-escrow.mobileconfig</code> file, making sure you get the indentation correct. Save this file with a suitable name like <code class="highlighter-rouge">FileVault Recovery Key Escrow.mobileconfig</code>.</p>
+  </li>
+  <li>
+    <p>Sign the new profile thusly:</p>
+  </li>
+</ol>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">/usr/bin/security cms <span class="nt">-S</span> <span class="nt">-N</span> <span class="s2">"Common Name of signing certificate in your keychain"</span> <span class="nt">-i</span> /path/to/FileVault<span class="se">\ </span>Recovery<span class="se">\ </span>Key Escrow.mobileconfig <span class="nt">-o</span> /path/to/Signed-FileVault<span class="se">\ </span>Recovery<span class="se">\ </span>Key<span class="se">\ </span>Escrow.mobileconfig</code></pre></figure>
+
+<p>(lines scroll…)</p>
+
+<ol>
+  <li>
+    <p>Delete the temporary configuration profile from your Jamf Pro Server.</p>
+  </li>
+  <li>
+    <p>Upload your completed <code class="highlighter-rouge">Signed-FileVault Recovery Key Escrow.mobileconfig</code> profile to your Jamf Pro Server, then set an appropriate scope and deploy it.</p>
+  </li>
+</ol>
+
+<p>Thanks to <a href="https://github.com/opragel">@opragel</a> for the <a href="https://github.com/opragel/profiles/blob/master/macOS%20-%20Escrow%20FileVault%202%20Recovery%20Keys.mobileconfig">template/example configuration profile</a>.</p>
+</section>
+  
+<footer>
+  <div class="tags">
+    
+    <a class="tag" href="/tags#profiles">#profiles</a>
+    
+    <a class="tag" href="/tags#filevault">#filevault</a>
+    
+    <a class="tag" href="/tags#high-sierra">#high-sierra</a>
+    
+  </div>
+</footer>
+
+
+</article>
+
+<!-- Disqus -->
+
+
+<!-- Post navigation -->
+
+
+    </div>
+    
+
+
+<footer class="site-footer">
+	<p class="text">Powered by <a href="https://jekyllrb.com/">Jekyll</a> with <a href="https://github.com/rohanchandra/type-theme">Type Theme</a>
+</p>
+</footer>
+
+
+  </body>
+</html>
