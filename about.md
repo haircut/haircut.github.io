@@ -27,7 +27,7 @@ The theme is based on [Tale](https://github.com/chesterhow/tale/) by Chester How
 
 I respect your privacy, so this site is not configured to track you. All assets are served locally.
 
-This is a static site served over HTTPS that _does not_ use cookies, Javascript, CDN assets, or analytics/tracking. It is hosted using [GitHub Pages](https://pages.github.com/), so GitHub may receive information about your connection.
+This is a static site served over HTTPS that _does not_ use cookies, Javascript, CDN assets, or analytics/tracking. It is hosted using [GitHub Pages](https://pages.github.com/), so GitHub may receive information about your connection. Read [GitHub's privacy policy](https://help.github.com/articles/github-privacy-statement/) for more details.
 
 ## Fonts
 - Sans serif text is set in [Noto Sans](https://www.google.com/get/noto/), by Google.
