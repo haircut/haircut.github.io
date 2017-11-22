@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>
+    
+      NoMAD Control Scripts for Jamf &middot; haircut
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/styles.css">
+</head>
+
+
+  <body>
+    <nav class="nav">
+      <div class="nav-container">
+        <a href="/">
+          <h2 class="nav-title"><span class="nav-title-accent">haircut</span> <span class="nav-title-subtitle">on managing macs</span></h2>
+        </a>
+        <ul>
+          <li><a href="/about">About</a></li>
+          <li><a href="/">Posts</a></li>
+        </ul>
+    </div>
+  </nav>
+
+    <main>
+      <div class="post">
+  <div class="post-info">
+    
+
+    
+      <time datetime="2017-10-29 00:00:00 -0400">October 29, 2017</time>
+    
+  </div>
+
+  <h1 class="post-title">NoMAD Control Scripts for Jamf</h1>
+  <div class="post-line"></div>
+
+  <p><a href="https://nomad.menu/">NoMAD</a> is a <em>fantastic</em> utility to bridge the gap between your enterprise directory accounts and endpoint devices. It allows your Mac to behave like a directory-bound client without all the headache.</p>
+
+<p>I’ve written a handful of Python scripts to help manage the application on your clients.</p>
+
+<!--more-->
+
+<ul>
+  <li><code class="highlighter-rouge">nomad-add-launchagent.py</code>: creates the NoMAD LaunchAgent</li>
+  <li><code class="highlighter-rouge">nomad-load-launchagent.py</code>: loads an existing NoMAD LaunchAgent</li>
+  <li><code class="highlighter-rouge">nomad-pre-update.py</code>: unloads NoMAD LaunchAgent and quits NoMAD prior to installing an updated version</li>
+</ul>
+
+<p>These scripts are designed to be used in Jamf Pro policies. I’ve separated the functionality for different use cases
+and flexibility. The <code class="highlighter-rouge">...add...</code> and <code class="highlighter-rouge">...load...</code> file naming convention ensures the scripts will run in the correct
+order since Jamf Pro runs scripts alphabetically.</p>
+
+<h2 id="scripts">Scripts</h2>
+
+<h3 id="nomad-add-launchagentpy">nomad-add-launchagent.py</h3>
+
+<script src="https://gist.github.com/haircut/108d3b8bd402cc56aa1f65df54f3b7eb.js?file=nomad-add-launchagent.py"></script>
+
+<h2 id="example-jamf-pro-policies">Example Jamf Pro policies</h2>
+
+<h3 id="install-policy">Install Policy</h3>
+
+<ul>
+  <li>Package: <code class="highlighter-rouge">NoMAD.pkg</code></li>
+  <li>Script: <code class="highlighter-rouge">nomad-add-launchagent.py</code> <strong>After</strong></li>
+  <li>Script: <code class="highlighter-rouge">nomad-load-launchagent.py</code> <strong>After</strong></li>
+</ul>
+
+<h3 id="update-policy">Update Policy</h3>
+
+<ul>
+  <li>Script: <code class="highlighter-rouge">nomad-pre-update.py</code> <strong>Before</strong></li>
+  <li>Package: <code class="highlighter-rouge">NoMAD.pkg</code></li>
+  <li>Script: <code class="highlighter-rouge">nomad-load-launchagent.py</code> <strong>After</strong></li>
+</ul>
+
+
+</div>
+
+<div class="pagination">
+  
+  
+    <a href="/post/how-to-manage-filevault-recovery-key-escrow.html" class="right arrow">&#8594;</a>
+  
+
+  <a href="#" class="top">Top</a>
+</div>
+
+    </main>
+
+    <footer>
+      <span>
+        <a href="https://creativecommons.org/licenses/by/4.0/" title="Creative Commons Attribution 4.0 International (CC BY 4.0)">CC BY 4.0</a> Matthew Warren
+      </span>
+    </footer>
+  </body>
+</html>

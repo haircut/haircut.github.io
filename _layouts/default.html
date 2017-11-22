@@ -1,11 +1,29 @@
 <!DOCTYPE html>
-<html class="no-js">
+<html lang="en">
+
   {% include head.html %}
+
   <body>
-    {% include header.html %}
-    <div class="content">
-      {{ content }}
+    <nav class="nav">
+      <div class="nav-container">
+        <a href="{{ site.baseurl }}/">
+          <h2 class="nav-title"><span class="nav-title-accent">{{ site.title }}</span> <span class="nav-title-subtitle">{{ site.subtitle }}</span></h2>
+        </a>
+        <ul>
+          <li><a href="{{ '/about' | prepend: site.baseurl }}">About</a></li>
+          <li><a href="{{ site.baseurl }}/">Posts</a></li>
+        </ul>
     </div>
-    {% include footer.html %}
+  </nav>
+
+    <main>
+      {{ content }}
+    </main>
+
+    <footer>
+      <span>
+        <a href="https://creativecommons.org/licenses/by/4.0/" title="Creative Commons Attribution 4.0 International (CC BY 4.0)">CC BY 4.0</a> {{ site.author.name }}
+      </span>
+    </footer>
   </body>
 </html>

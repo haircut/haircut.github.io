@@ -29,19 +29,24 @@ plutil -convert xml1 /path/to/de-signed.mobileconfig
 {% endhighlight %}
 (lines scroll...)
 
- 5. Copy the `template-fde-recovery-key-escrow.mobileconfig` included in this gist to a new file in your favorite text editor. Change the values of `PayloadOrganization` and `Location` as needed.
+5. Copy the `template-fde-recovery-key-escrow.mobileconfig` included in this gist to a new file in your favorite text editor. Change the values of `PayloadOrganization` and `Location` as needed.
 
- 6. Open the de-signed profile originally downloaded from the Jamf Pro Server in your text editor. Find the `PayloadContent` below `PayloadCertificateFileName` – it's the big, obvious block of certificate data. Copy and paste this to the same location in your edited `template-fde-recovery-key-escrow.mobileconfig` file, making sure you get the indentation correct. Save this file with a suitable name like `FileVault Recovery Key Escrow.mobileconfig`.
+6. Open the de-signed profile originally downloaded from the Jamf Pro Server in your text editor. Find the `PayloadContent` below `PayloadCertificateFileName` – it's the big, obvious block of certificate data. Copy and paste this to the same location in your edited `template-fde-recovery-key-escrow.mobileconfig` file, making sure you get the indentation correct. Save this file with a suitable name like `FileVault Recovery Key Escrow.mobileconfig`.
 
- 7. Sign the new profile thusly:
+7. Sign the new profile thusly:
 
 {% highlight shell %}
 /usr/bin/security cms -S -N "Common Name of signing certificate in your keychain" -i /path/to/FileVault\ Recovery\ Key Escrow.mobileconfig -o /path/to/Signed-FileVault\ Recovery\ Key\ Escrow.mobileconfig
 {% endhighlight %}
 (lines scroll...)
 
- 8. Delete the temporary configuration profile from your Jamf Pro Server.
+8. Delete the temporary configuration profile from your Jamf Pro Server.
 
 9. Upload your completed `Signed-FileVault Recovery Key Escrow.mobileconfig` profile to your Jamf Pro Server, then set an appropriate scope and deploy it.
 
+### Acknowledgements
+
  Thanks to [@opragel](https://github.com/opragel) for the [template/example configuration profile](https://github.com/opragel/profiles/blob/master/macOS%20-%20Escrow%20FileVault%202%20Recovery%20Keys.mobileconfig).
+
+### Notes
+ > Note: This post began as a [Gist](https://gist.github.com/haircut/b4fb2a102b7e25ef35b0826922967fb3), but has since been greatly expanded.

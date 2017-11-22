@@ -1,12 +1,37 @@
 ---
-layout: page
-title: About
-permalink: /about/
-feature-img: "assets/img/sample_feature_img_2.png"
+layout: post
+title: "About"
 ---
 
-Type Theme is a free and open-source theme for [Jekyll](http://jekyllrb.com/), licensed under the MIT License.
+## Author
 
-Head over to the [theme's documentation](https://rohanchandra.github.io/project/type/) for much more information about Type Theme or to install this theme on your own Jekyll site.
+<p class="avatar"><img src="{{ site.baseurl }}/assets/img/avatar.png" alt="haircut"></p>
 
-This file is an example of a page in Jekyll, that automatically shows up in the header navigation, you can delete or modify this file freely.
+I'm Matthew Warren. I'm currently the Apple Systems Administrator at UNC Asheville.
+
+I write about managing Macs using Jamf Pro, Python, and other tools.
+
+This is my personal site, and views expressed here do not necessarily reflect those of my employer.
+
+I'm usually on the [MacAdmins Slack Team](https://macadmins.herokuapp.com/); feel free to [direct message me](https://macadmins.slack.com/messages/D1KK1H0PR/team/U0DH2V3PE/).
+
+You can also find my [projects on GitHub](https://github.com/haircut), and [various snippets on Gist](https://gist.github.com/haircut).
+
+## Generation and Theme
+
+This site is generated using [Jekyll](https://jekyllrb.com).
+
+The theme is based on [Tale](https://github.com/chesterhow/tale/) by Chester How, which I've customized for my preferences.
+
+## Privacy
+
+I respect your privacy, so this site is not configured to track you. All assets are served locally.
+
+This is a static site served over HTTPS that _does not_ use cookies, Javascript, CDN assets, or analytics/tracking. It is hosted using [GitHub Pages](https://pages.github.com/), so GitHub may receive information about your connection.
+
+## Fonts
+- Sans serif text is set in [Noto Sans](https://www.google.com/get/noto/), by Google.
+- Serif text is set in [Noto Serif](https://www.google.com/get/noto/), by Google.
+- Monospaced text is set in [Space Mono](https://fonts.google.com/specimen/Space+Mono) by Colophon Foundry.
+
+Fonts are served locally with the help of [google-webfonts-helper](https://google-webfonts-helper.herokuapp.com/fonts).
